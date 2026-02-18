@@ -1,12 +1,19 @@
-/* src/TeamManagement.css */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+/* Scope styles to avoid global leaks, but ensure reset applies */
 .team-management-body {
   font-family: 'Inter', sans-serif;
   background: #f0f4f8;
   color: #111827;
   min-height: 100vh;
   padding: 32px 24px;
+  box-sizing: border-box;
+}
+
+.team-management-body *, 
+.team-management-body *::before, 
+.team-management-body *::after {
+  box-sizing: border-box;
 }
 
 /* SEARCH */
@@ -22,7 +29,8 @@
   background: #f0f4f8;
   border: 1.5px solid #d1d5db;
   border-radius: 50px;
-  padding: 10px 18px;
+  padding: 0 18px; /* Padding handled by height alignment */
+  height: 50px;    /* Explicit height for consistency */
   width: 340px;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -34,6 +42,7 @@
   border: none; outline: none;
   font-family: inherit; font-size: 14px;
   color: #111827; background: #f0f4f8; width: 100%;
+  height: 100%;
 }
 .search-bar input::placeholder { color: #9ca3af; }
 .search-bar svg { color: #9ca3af; flex-shrink: 0; }
@@ -41,7 +50,7 @@
 /* LAYOUT */
 .tm-container { max-width: 860px; margin: 0 auto; }
 
-/* PAGE HEADER */
+/* HEADER */
 .page-header {
   display: flex;
   align-items: flex-start;
@@ -72,12 +81,10 @@
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  transition: background 0.2s, transform 0.1s;
   box-shadow: 0 4px 14px rgba(0,74,173,0.3);
-  flex-shrink: 0;
 }
-.btn-primary:hover { background: #003d91; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,74,173,0.38); }
-.btn-primary:active { transform: translateY(0); }
+.btn-primary:hover { background: #003d91; transform: translateY(-1px); }
 
 /* FILTERS */
 .filters { display: flex; gap: 10px; margin-bottom: 14px; }
@@ -92,7 +99,6 @@
   cursor: pointer; transition: background 0.2s;
 }
 .filter-btn:hover { background: #b3d6ff; }
-.filter-btn svg { width: 13px; height: 13px; }
 
 /* TABLE */
 .table-wrap {
@@ -121,7 +127,6 @@
   border-top: 1px solid #f0f4f8;
   transition: background 0.12s;
   animation: fadeIn 0.28s ease forwards;
-  /* removed opacity:0 so React doesn't hide them before animation starts */
 }
 .table-row:hover { background: #e8eef5; }
 
@@ -138,9 +143,8 @@
   width: 32px; height: 32px; border-radius: 50%;
   background: #dbeafe;
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+  flex-shrink: 0; color: #3b82f6;
 }
-.avatar svg { color: #3b82f6; }
 
 /* BADGES */
 .badge {
@@ -155,11 +159,9 @@
 .menu-btn {
   background: none; border: none; cursor: pointer;
   color: #9ca3af; padding: 4px; border-radius: 6px;
-  transition: background 0.12s, color 0.12s;
   display: flex; align-items: center; justify-content: center;
 }
 .menu-btn:hover { background: #f3f4f6; color: #374151; }
-
 .empty-state { text-align: center; padding: 52px 20px; color: #9ca3af; font-size: 14px; }
 
 /* MODAL */
@@ -168,9 +170,8 @@
   background: rgba(15,23,42,0.45);
   display: flex; align-items: center; justify-content: center;
   z-index: 100; backdrop-filter: blur(3px);
-  /* React transition control handled via conditional rendering or CSS class */
+  animation: fadeIn 0.2s;
 }
-
 .modal {
   background: #ffffff; border-radius: 16px; padding: 32px 32px 28px;
   width: 100%; max-width: 520px;
@@ -187,10 +188,9 @@
 .modal-close {
   position: absolute; top: 28px; right: 28px;
   background: none; border: none; cursor: pointer;
-  color: #374151; font-size: 20px; line-height: 1; padding: 4px 6px;
-  border-radius: 6px; transition: background 0.14s;
+  color: #374151; font-size: 20px;
 }
-.modal-close:hover { background: #f3f4f6; }
+.modal-close:hover { background: #f3f4f6; border-radius: 6px; }
 
 .field { margin-bottom: 22px; }
 .field label {
@@ -198,96 +198,103 @@
   color: #0a1628; margin-bottom: 10px;
 }
 .field label.error-label { color: #dc2626; }
-.field input {
-  width: 100%; padding: 15px 20px;
-  border: 1.5px solid #1a1a2e; border-radius: 50px;
-  font-family: inherit; font-size: 15px; color: #111827;
-  outline: none; background: #ffffff;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.field input:focus { border-color: #004AAD; box-shadow: 0 0 0 3px rgba(0,74,173,0.08); }
-.field input.error { border-color: #dc2626; }
-.error-msg { font-size: 12px; color: #dc2626; margin-top: 5px; padding-left: 4px; }
 
-/* Function select */
+/* UNIFIED INPUT STYLES (The Pills) */
+.field input, 
+.field select, 
+.custom-select-trigger {
+  width: 100%;
+  height: 54px; /* Force consistent height */
+  padding: 0 20px; /* Vertical centering handled by flex/line-height */
+  border: 1.5px solid #1a1a2e;
+  border-radius: 50px;
+  font-family: inherit; font-size: 15px; color: #111827;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  
+  /* Flexbox ensures vertical centering for all types */
+  display: flex; 
+  align-items: center;
+}
+
+/* Specifics for input/select to behave like the flex div */
+.field input {
+  display: block; /* Inputs don't like display:flex */
+  line-height: 52px; /* Height minus borders */
+}
+
+/* Specifics for the Function Select */
 .select-wrap { position: relative; }
+.select-wrap select {
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  padding-right: 44px; /* Space for arrow */
+  cursor: pointer;
+}
 .select-wrap::after {
   content: ''; position: absolute; right: 20px; top: 50%;
   transform: translateY(-50%); pointer-events: none;
   border-left: 5px solid transparent; border-right: 5px solid transparent;
   border-top: 6px solid #6b7280;
 }
-.select-wrap select {
-  width: 100%; padding: 15px 44px 15px 20px;
-  border: 1.5px solid #1a1a2e; border-radius: 50px;
-  font-family: inherit; font-size: 15px; color: #111827; background: #ffffff;
-  outline: none; appearance: none; -webkit-appearance: none; cursor: pointer;
-  transition: border-color 0.2s;
-}
-.select-wrap select:focus { border-color: #004AAD; box-shadow: 0 0 0 3px rgba(0,74,173,0.08); }
 
-/* Custom Role dropdown */
+/* Specifics for the Role Custom Trigger */
 .custom-select-wrap { position: relative; }
 .custom-select-trigger {
-  width: 100%; padding: 15px 20px;
-  border: 1.5px solid #1a1a2e; border-radius: 50px;
-  font-family: inherit; font-size: 15px; color: #111827; background: #ffffff;
-  cursor: pointer; display: flex; align-items: center; justify-content: space-between;
-  transition: border-color 0.2s, border-radius 0.12s;
+  justify-content: space-between;
+  cursor: pointer;
   user-select: none;
 }
-.custom-select-trigger.placeholder { color: #9ca3af; }
-.custom-select-trigger:hover { border-color: #004AAD; }
-.custom-select-trigger.open { border-color: #004AAD; border-radius: 18px 18px 0 0; box-shadow: 0 0 0 3px rgba(0,74,173,0.08); }
-.chevron { flex-shrink: 0; color: #6b7280; transition: transform 0.2s; }
-.custom-select-trigger.open .chevron { transform: rotate(180deg); }
+
+.field input:focus, .field select:focus, .custom-select-trigger.open {
+  border-color: #004AAD;
+  box-shadow: 0 0 0 3px rgba(0,74,173,0.08);
+}
+.custom-select-trigger.open {
+  border-radius: 18px 18px 0 0;
+}
 
 .custom-dropdown {
   position: absolute; top: 100%; left: 0; right: 0;
   background: #fff; border: 1.5px solid #004AAD; border-top: none;
   border-radius: 0 0 18px 18px; overflow: hidden; z-index: 200;
   box-shadow: 0 8px 24px rgba(0,0,0,0.1); 
-  display: block; /* Controlled by React condition */
+  display: block;
 }
 .dropdown-option {
   padding: 13px 20px; font-size: 15px; color: #111827;
   cursor: pointer; transition: background 0.1s;
   border-top: 1px solid #f3f4f6;
 }
-.dropdown-option:first-child { border-top: none; }
-.dropdown-option:hover, .dropdown-option.selected { background: #C7E2FF; }
+.dropdown-option:hover { background: #C7E2FF; }
 
-.modal-actions { display: flex; gap: 16px; margin-top: 8px; }
-.btn-cancel {
-  flex: 1; padding: 16px; border: 2px solid #004AAD; border-radius: 10px;
-  background: transparent; font-family: inherit; font-size: 15px; font-weight: 700;
-  color: #004AAD; cursor: pointer; transition: background 0.15s;
+/* Buttons */
+.modal-actions { display: flex; gap: 16px; margin-top: 24px; }
+.btn-cancel, .btn-add {
+  flex: 1; padding: 16px; border-radius: 10px;
+  font-family: inherit; font-size: 15px; font-weight: 700;
+  cursor: pointer;
 }
-.btn-cancel:hover { background: rgba(0,74,173,0.05); }
+.btn-cancel {
+  border: 2px solid #004AAD; background: transparent; color: #004AAD;
+}
 .btn-add {
-  flex: 1; padding: 16px; border: none; border-radius: 10px;
-  background: #004AAD; font-family: inherit; font-size: 15px; font-weight: 700;
-  color: #fff; cursor: pointer;
-  transition: background 0.2s;
+  border: none; background: #004AAD; color: #fff;
   box-shadow: 0 4px 14px rgba(0,74,173,0.3);
 }
-.btn-add:hover:not(:disabled) { background: #003d91; }
 .btn-add:disabled { background: #9ca3af; box-shadow: none; cursor: not-allowed; }
+.error-msg { font-size: 12px; color: #dc2626; margin-top: 5px; padding-left: 4px; }
 
-/* TOAST */
+/* Toast */
 .toast {
   position: fixed; bottom: 28px; left: 50%;
   transform: translateX(-50%) translateY(70px);
   background: rgba(35,195,171,0.15);
-  border: 1px solid #23C3AB;
-  color: #0d9488;
+  border: 1px solid #23C3AB; color: #0d9488;
   padding: 11px 20px; border-radius: 10px;
   font-size: 14px; font-weight: 500;
-  display: flex; align-items: center; gap: 12px;
-  z-index: 999;
-  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), opacity 0.3s;
+  display: flex; align-items: center; gap: 12px; z-index: 999;
+  transition: transform 0.3s, opacity 0.3s;
   opacity: 0; pointer-events: none;
 }
 .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: all; }
-.toast-close { background: none; border: none; cursor: pointer; color: #0d9488; font-size: 15px; opacity: 0.7; }
-.toast-close:hover { opacity: 1; }
