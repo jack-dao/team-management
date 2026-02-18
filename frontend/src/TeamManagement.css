@@ -50,7 +50,7 @@
 /* HEADER */
 .page-header {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end; /* Align items to the bottom (aligns button with paragraph) */
   justify-content: space-between;
   margin-bottom: 28px;
 }
@@ -60,11 +60,13 @@
   color: #111827;
   letter-spacing: -0.3px;
   line-height: 1.2;
+  margin: 0; /* Remove default margin to pull text closer */
 }
 .page-header p {
   font-size: 13.5px;
   color: #6b7280;
-  margin-top: 5px;
+  margin-top: 6px; /* Small gap between H1 and p */
+  margin-bottom: 0;
 }
 
 .btn-primary {
@@ -80,6 +82,8 @@
   white-space: nowrap;
   transition: background 0.2s, transform 0.1s;
   box-shadow: 0 4px 14px rgba(0,74,173,0.3);
+  /* Optional: Ensure button doesn't stretch if flex settings change */
+  align-self: flex-end; 
 }
 .btn-primary:hover { background: #003d91; transform: translateY(-1px); }
 
