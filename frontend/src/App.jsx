@@ -56,18 +56,18 @@ export default function App() {
 
   const handleAddMember = async (newMember) => {
     try {
-      constQH = await fetch("/api/team-members", {
+      const res = await fetch("/api/team-members", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newMember),
       });
 
-      if (constQH.ok) {
+      if (res.ok) {
         setIsModalOpen(false);
         fetchMembers();
         showToast("Member Added");
       } else {
-        const err = await constQH.json();
+        const err = await res.json();
         alert(err.message || "Failed to add member");
       }
     } catch (error) {
@@ -144,8 +144,11 @@ export default function App() {
         roleOptions={ROLE_OPTIONS}
       />
 
-      {/* Toast */}
+      {/* Toast Popup with Icon */}
       <div className={`toast ${toast.show ? 'show' : ''}`} id="toast">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#23C3AB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
         <span id="toastMsg">{toast.message}</span>
         <button className="toast-close" onClick={() => setToast({ show: false, message: "" })}>✕</button>
       </div>

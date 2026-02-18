@@ -32,10 +32,17 @@ export default function AddMemberModal({ isOpen, onClose, onAdd, functionOptions
   const isFormValid = formData.fullName.trim() && formData.email.trim() && !emailError && formData.function && formData.role;
 
   const handleSubmit = () => {
-    if (isFormValid) onAdd(formData);
+    if (isFormValid) {
+      // CORRECTED: Keys must match Java field names "function" and "role"
+      onAdd({
+        fullName: formData.fullName,
+        email: formData.email,
+        function: formData.function,
+        role: formData.role
+      });
+    }
   };
 
-  // Fallback options if not passed from parent
   const fOpts = functionOptions || [
     { label: "Marketing & Sales", value: "MARKETING_SALES" },
     { label: "Product", value: "PRODUCT" },
