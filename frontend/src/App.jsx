@@ -2,21 +2,42 @@ import { useState, useEffect } from "react";
 import SearchBar from "./components/SearchBar";
 import TeamTable from "./components/TeamTable";
 import AddMemberModal from "./components/AddMemberModal";
+import Dropdown from "./components/Dropdown";
 import "./TeamManagement.css";
 
 export default function App() {
   const [members, setMembers] = useState([]);
   const [query, setQuery] = useState("");
+  
+  // Filter State
+  const [filterFunction, setFilterFunction] = useState("");
+  const [filterRole, setFilterRole] = useState("");
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toast, setToast] = useState({ show: false, message: "" });
 
+  // Dropdown Options
+  const FUNCTION_OPTIONS = [
+    { label: "Marketing & Sales", value: "MARKETING_SALES" },
+    { label: "Product", value: "PRODUCT" },
+    { label: "Engineering", value: "ENGINEERING" },
+    { label: "IT", value: "IT" },
+  ];
+
+  const ROLE_OPTIONS = [
+    { label: "Admin", value: "ADMIN" },
+    { label: "Contributor", value: "CONTRIBUTOR" },
+  ];
+
   // Fetch from Spring Boot
-  const fetchMembers = async (search = "") => {
+  const fetchMembers = async () => {
     try {
-      const url = search 
-        ? `/api/team-members?q=${search}` 
-        : "/api/team-members";
-      const res = await fetch(url);
+      const params = new URLSearchParams();
+      if (query) params.append("q", query);
+      if (filterFunction) params.append("function", filterFunction);
+      if (filterRole) params.append("role", filterRole);
+
+      const res = await fetch(`/api/team-members?${params.toString()}`);
       if (res.ok) {
         const data = await res.json();
         setMembers(data);
@@ -28,25 +49,25 @@ export default function App() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      fetchMembers(query);
+      fetchMembers();
     }, 300);
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, filterFunction, filterRole]);
 
   const handleAddMember = async (newMember) => {
     try {
-      const res = await fetch("/api/team-members", {
+      constQH = await fetch("/api/team-members", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newMember),
       });
 
-      if (res.ok) {
+      if (constQH.ok) {
         setIsModalOpen(false);
-        fetchMembers(query);
+        fetchMembers();
         showToast("Member Added");
       } else {
-        const err = await res.json();
+        const err = await constQH.json();
         alert(err.message || "Failed to add member");
       }
     } catch (error) {
@@ -60,7 +81,7 @@ export default function App() {
     try {
       const res = await fetch(`/api/team-members/${id}`, { method: "DELETE" });
       if (res.ok) {
-        fetchMembers(query);
+        fetchMembers();
         showToast("Member Deleted");
       }
     } catch (error) {
@@ -93,14 +114,20 @@ export default function App() {
 
         {/* Filters */}
         <div className="filters">
-          <button className="filter-btn">
-            Function
-            <svg fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-          <button className="filter-btn">
-            Role
-            <svg fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
+          <Dropdown 
+            variant="filter"
+            placeholder="Function"
+            options={FUNCTION_OPTIONS}
+            value={filterFunction}
+            onChange={setFilterFunction}
+          />
+          <Dropdown 
+            variant="filter"
+            placeholder="Role"
+            options={ROLE_OPTIONS}
+            value={filterRole}
+            onChange={setFilterRole}
+          />
         </div>
 
         {/* Table */}
@@ -112,7 +139,9 @@ export default function App() {
       <AddMemberModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        onAdd={handleAddMember} 
+        onAdd={handleAddMember}
+        functionOptions={FUNCTION_OPTIONS}
+        roleOptions={ROLE_OPTIONS}
       />
 
       {/* Toast */}

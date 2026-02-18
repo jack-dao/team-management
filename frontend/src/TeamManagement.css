@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* Scope styles to avoid global leaks, but ensure reset applies */
 .team-management-body {
   font-family: 'Inter', sans-serif;
   background: #f0f4f8;
@@ -10,9 +9,7 @@
   box-sizing: border-box;
 }
 
-.team-management-body *, 
-.team-management-body *::before, 
-.team-management-body *::after {
+.team-management-body *, .team-management-body *::before, .team-management-body *::after {
   box-sizing: border-box;
 }
 
@@ -29,8 +26,8 @@
   background: #f0f4f8;
   border: 1.5px solid #d1d5db;
   border-radius: 50px;
-  padding: 0 18px; /* Padding handled by height alignment */
-  height: 50px;    /* Explicit height for consistency */
+  padding: 0 18px;
+  height: 50px;
   width: 340px;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -86,19 +83,91 @@
 }
 .btn-primary:hover { background: #003d91; transform: translateY(-1px); }
 
-/* FILTERS */
+/* FILTERS CONTAINER */
 .filters { display: flex; gap: 10px; margin-bottom: 14px; }
-.filter-btn {
+
+/* --- NEW DROPDOWN STYLES --- */
+.dropdown-container {
+  position: relative;
+  user-select: none;
+}
+
+/* 1. Filter Variant (Blue Pill) */
+.dropdown-container.filter .dropdown-trigger {
   display: flex; align-items: center; gap: 7px;
   background: #C7E2FF;
   color: #004AAD;
-  border: none;
   border-radius: 50px;
   padding: 8px 16px;
   font-family: inherit; font-size: 13px; font-weight: 500;
   cursor: pointer; transition: background 0.2s;
+  min-width: 120px;
+  justify-content: space-between;
 }
-.filter-btn:hover { background: #b3d6ff; }
+.dropdown-container.filter .dropdown-trigger:hover,
+.dropdown-container.filter .dropdown-trigger.open { 
+  background: #b3d6ff; 
+}
+.dropdown-container.filter .dropdown-trigger.open {
+  border-radius: 14px 14px 0 0;
+}
+
+/* 2. Form Variant (Modal Inputs) */
+.dropdown-container.form {
+  width: 100%;
+}
+.dropdown-container.form .dropdown-trigger {
+  width: 100%;
+  height: 54px;
+  padding: 0 20px;
+  border: 1.5px solid #1a1a2e;
+  border-radius: 50px;
+  background: #ffffff;
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer;
+  font-size: 15px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.dropdown-container.form .dropdown-trigger.open {
+  border-color: #004AAD;
+  box-shadow: 0 0 0 3px rgba(0,74,173,0.08);
+  border-radius: 18px 18px 0 0;
+}
+
+/* Shared Menu */
+.dropdown-menu {
+  position: absolute; top: 100%; left: 0; right: 0;
+  background: #fff; 
+  z-index: 200;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  animation: fadeIn 0.1s ease-out;
+}
+.dropdown-container.filter .dropdown-menu {
+  border-radius: 0 0 14px 14px;
+  border: none;
+  min-width: 140px;
+}
+.dropdown-container.form .dropdown-menu {
+  border: 1.5px solid #004AAD;
+  border-top: none;
+  border-radius: 0 0 18px 18px;
+}
+
+/* Menu Items */
+.dropdown-item {
+  padding: 12px 20px;
+  font-size: 14px;
+  color: #111827;
+  cursor: pointer;
+  border-top: 1px solid #f3f4f6;
+  transition: background 0.1s;
+}
+.dropdown-item:hover { background: #C7E2FF; }
+.dropdown-item.selected { background: #e0f0ff; color: #004AAD; font-weight: 600; }
+
+/* --- END DROPDOWN --- */
+
 
 /* TABLE */
 .table-wrap {
@@ -199,74 +268,22 @@
 }
 .field label.error-label { color: #dc2626; }
 
-/* UNIFIED INPUT STYLES (The Pills) */
-.field input, 
-.field select, 
-.custom-select-trigger {
+/* Standard Inputs */
+.field input {
   width: 100%;
-  height: 54px; /* Force consistent height */
-  padding: 0 20px; /* Vertical centering handled by flex/line-height */
+  height: 54px;
+  padding: 0 20px;
   border: 1.5px solid #1a1a2e;
   border-radius: 50px;
   font-family: inherit; font-size: 15px; color: #111827;
   background: #ffffff;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
-  
-  /* Flexbox ensures vertical centering for all types */
-  display: flex; 
-  align-items: center;
 }
-
-/* Specifics for input/select to behave like the flex div */
-.field input {
-  display: block; /* Inputs don't like display:flex */
-  line-height: 52px; /* Height minus borders */
-}
-
-/* Specifics for the Function Select */
-.select-wrap { position: relative; }
-.select-wrap select {
-  appearance: none; -webkit-appearance: none; -moz-appearance: none;
-  padding-right: 44px; /* Space for arrow */
-  cursor: pointer;
-}
-.select-wrap::after {
-  content: ''; position: absolute; right: 20px; top: 50%;
-  transform: translateY(-50%); pointer-events: none;
-  border-left: 5px solid transparent; border-right: 5px solid transparent;
-  border-top: 6px solid #6b7280;
-}
-
-/* Specifics for the Role Custom Trigger */
-.custom-select-wrap { position: relative; }
-.custom-select-trigger {
-  justify-content: space-between;
-  cursor: pointer;
-  user-select: none;
-}
-
-.field input:focus, .field select:focus, .custom-select-trigger.open {
+.field input:focus {
   border-color: #004AAD;
   box-shadow: 0 0 0 3px rgba(0,74,173,0.08);
 }
-.custom-select-trigger.open {
-  border-radius: 18px 18px 0 0;
-}
-
-.custom-dropdown {
-  position: absolute; top: 100%; left: 0; right: 0;
-  background: #fff; border: 1.5px solid #004AAD; border-top: none;
-  border-radius: 0 0 18px 18px; overflow: hidden; z-index: 200;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1); 
-  display: block;
-}
-.dropdown-option {
-  padding: 13px 20px; font-size: 15px; color: #111827;
-  cursor: pointer; transition: background 0.1s;
-  border-top: 1px solid #f3f4f6;
-}
-.dropdown-option:hover { background: #C7E2FF; }
 
 /* Buttons */
 .modal-actions { display: flex; gap: 16px; margin-top: 24px; }

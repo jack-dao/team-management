@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import Dropdown from './Dropdown';
 
-export default function AddMemberModal({ isOpen, onClose, onAdd }) {
+export default function AddMemberModal({ isOpen, onClose, onAdd, functionOptions, roleOptions }) {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -9,27 +10,13 @@ export default function AddMemberModal({ isOpen, onClose, onAdd }) {
   });
   
   const [emailError, setEmailError] = useState(false);
-  const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
-  const roleWrapRef = useRef(null);
 
   useEffect(() => {
     if (isOpen) {
       setFormData({ fullName: '', email: '', function: '', role: '' });
       setEmailError(false);
-      setRoleDropdownOpen(false);
     }
   }, [isOpen]);
-
-  // Click outside to close dropdown
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (roleWrapRef.current && !roleWrapRef.current.contains(event.target)) {
-        setRoleDropdownOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -48,11 +35,18 @@ export default function AddMemberModal({ isOpen, onClose, onAdd }) {
     if (isFormValid) onAdd(formData);
   };
 
-  const getRoleDisplay = () => {
-    if (!formData.role) return <span style={{color: '#9ca3af'}}>Select Role</span>;
-    // Map backend ENUM to display text
-    return formData.role === 'ADMIN' ? 'Admin' : 'Contributor';
-  };
+  // Fallback options if not passed from parent
+  const fOpts = functionOptions || [
+    { label: "Marketing & Sales", value: "MARKETING_SALES" },
+    { label: "Product", value: "PRODUCT" },
+    { label: "Engineering", value: "ENGINEERING" },
+    { label: "IT", value: "IT" },
+  ];
+  
+  const rOpts = roleOptions || [
+    { label: "Admin", value: "ADMIN" },
+    { label: "Contributor", value: "CONTRIBUTOR" },
+  ];
 
   if (!isOpen) return null;
 
@@ -88,46 +82,24 @@ export default function AddMemberModal({ isOpen, onClose, onAdd }) {
 
         <div className="field">
           <label>Function</label>
-          <div className="select-wrap">
-            <select 
-              id="mFunction" 
-              value={formData.function}
-              onChange={e => setFormData({...formData, function: e.target.value})}
-              style={{ color: formData.function ? '#111827' : '#9ca3af' }}
-            >
-              <option value="" disabled>Select Function</option>
-              <option value="MARKETING_SALES">Marketing & Sales</option>
-              <option value="PRODUCT">Product</option>
-              <option value="IT">IT</option>
-              <option value="ENGINEERING">Engineering</option>
-            </select>
-          </div>
+          <Dropdown 
+            variant="form"
+            placeholder="Select Function"
+            options={fOpts}
+            value={formData.function}
+            onChange={(val) => setFormData({...formData, function: val})}
+          />
         </div>
 
         <div className="field">
           <label>Role</label>
-          <div className="custom-select-wrap" ref={roleWrapRef}>
-            <div 
-              className={`custom-select-trigger ${roleDropdownOpen ? 'open' : ''}`} 
-              onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-            >
-              {getRoleDisplay()}
-              <span className="chevron" style={{ transform: roleDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
-                <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
-              </span>
-            </div>
-            
-            {roleDropdownOpen && (
-              <div className="custom-dropdown">
-                <div className="dropdown-option" onClick={() => { setFormData({...formData, role: 'ADMIN'}); setRoleDropdownOpen(false); }}>
-                  Admin
-                </div>
-                <div className="dropdown-option" onClick={() => { setFormData({...formData, role: 'CONTRIBUTOR'}); setRoleDropdownOpen(false); }}>
-                  Contributor
-                </div>
-              </div>
-            )}
-          </div>
+          <Dropdown 
+            variant="form"
+            placeholder="Select Role"
+            options={rOpts}
+            value={formData.role}
+            onChange={(val) => setFormData({...formData, role: val})}
+          />
         </div>
 
         <div className="modal-actions">
