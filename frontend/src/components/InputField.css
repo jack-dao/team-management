@@ -1,0 +1,7 @@
+.tmInput::placeholder {
+  color: #7F818F;
+}
+
+.tmInputError::placeholder {
+  color: #FF6663;
+}
