@@ -92,12 +92,11 @@
   margin-bottom: 4px; 
 }
 
+/* PRIMARY BUTTON (Add Member) */
 .btn-primary {
   background: #004AAD; 
-  color: #fff;
-  border: none;
-  width: 130px;
-  height: 49px;
+  color: #F9FAFF;
+  border: 2px solid transparent; 
   border-radius: 6px;
   padding: 16px 20px;
   box-sizing: border-box;
@@ -110,13 +109,24 @@
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.2s, transform 0.1s;
+  transition: all 0.2s ease;
   box-shadow: 0 4px 14px rgba(0,74,173,0.3);
 }
 
-.btn-primary:hover { 
-  background: #003d91; 
-  transform: translateY(-1px); 
+/* 👇 Updated Add Member Hover State 👇 */
+.btn-primary:hover:not(:disabled) { 
+  background: #23C3AB;
+  border-color: transparent;
+  color: #F9FAFF;
+  box-shadow: 0 4px 14px rgba(35, 195, 171, 0.3);
+}
+
+.btn-primary:disabled {
+  background: #7F818F;
+  color: #F9FAFF;
+  border-color: transparent;
+  box-shadow: none;
+  cursor: not-allowed;
 }
 
 /* FILTERS */
@@ -237,7 +247,7 @@
   font-weight: 700;
   font-size: 14px;
   color: #040820;
-  padding: 12px 16px; /* 16px left/right, 12px top/bottom */
+  padding: 12px 16px;
   display: flex;
   align-items: center;
 }
@@ -253,7 +263,7 @@
   animation: fadeIn 0.28s ease forwards;
 }
 
-/* Alternating Backgrounds (Row 1 Transparent, Row 2 #7F818F1A) */
+/* Alternating Backgrounds */
 .table-row:nth-child(even) {
   background: transparent;
 }
@@ -296,16 +306,6 @@
 }
 
 /* BADGES */
-/* Alternating Row Backgrounds (10% opacity of #7F818F) */
-.table-row:nth-child(even) {
-  background: transparent;
-}
-.table-row:nth-child(odd) {
-  background: rgba(127, 129, 143, 0.1); /* This is exactly #7F818F at 10% */
-}
-
-
-/* BADGES (Flairs) */
 .badge {
   display: inline-flex; 
   align-items: center;
@@ -314,21 +314,14 @@
   font-family: 'Open Sans', sans-serif;
   font-size: 13px; 
   font-weight: 600;
-  
-  /* 👇 Default Flair-Grey for Functions & Unassigned Roles 👇 */
-  background: rgba(127, 129, 143, 0.25); /* #7F818F at 25% opacity */
-  color: #7F818F;                        /* Solid #7F818F text */
-}
-
-/* Explicitly mapping the function class to the Grey Flair as well */
-.badge-func { 
   background: rgba(127, 129, 143, 0.25); 
-  color: #7F818F; 
+  color: #7F818F;                        
 }
 
-/* Specific Role Overrides */
+.badge-func { background: rgba(127, 129, 143, 0.25); color: #7F818F; }
 .badge-contributor { background: #C7E2FF; color: #004AAD; }
 .badge-admin { background: rgba(35,195,171,0.22); color: #0d9488; }
+
 
 /* ACTION MENU (Three Dots) */
 .cell-actions {
@@ -341,7 +334,6 @@
   display: flex; align-items: center; justify-content: center;
 }
 
-/* Row Actions Dropdown (More Menu) */
 .action-menu {
   position: absolute;
   top: 45px; 
@@ -432,12 +424,47 @@
 .field input:focus { border-color: #004AAD; box-shadow: 0 0 0 3px rgba(0,74,173,0.08); }
 
 .modal-actions { display: flex; gap: 16px; margin-top: 24px; }
+
+/* MODAL BUTTONS */
 .btn-cancel, .btn-add {
-  flex: 1; padding: 16px; border-radius: 10px; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
+  flex: 1; 
+  padding: 16px; 
+  border-radius: 10px; 
+  font-family: inherit; 
+  font-size: 15px; 
+  font-weight: 700; 
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
-.btn-cancel { border: 2px solid #004AAD; background: transparent; color: #004AAD; }
-.btn-add { border: none; background: #004AAD; color: #fff; box-shadow: 0 4px 14px rgba(0,74,173,0.3); }
-.btn-add:disabled { background: #9ca3af; box-shadow: none; cursor: not-allowed; }
+
+.btn-cancel { 
+  border: 2px solid #004AAD; 
+  background: transparent; 
+  color: #004AAD; 
+}
+
+/* 👇 Updated Cancel Button Hover State 👇 */
+.btn-cancel:hover {
+  border-color: #23C3AB;
+  color: #23C3AB;
+}
+
+.btn-add { 
+  border: none; 
+  background: #004AAD; 
+  color: #fff; 
+  box-shadow: 0 4px 14px rgba(0,74,173,0.3); 
+}
+.btn-add:hover:not(:disabled) {
+  background: #23C3AB;
+  box-shadow: 0 4px 14px rgba(35, 195, 171, 0.3);
+}
+.btn-add:disabled { 
+  background: #7F818F; 
+  color: #F9FAFF;
+  box-shadow: none; 
+  cursor: not-allowed; 
+}
 .error-msg { font-size: 12px; color: #dc2626; margin-top: 5px; padding-left: 4px; }
 
 /* TOAST */
