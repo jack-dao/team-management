@@ -65,8 +65,12 @@
 .page-header p {
   font-size: 13.5px;
   color: #6b7280;
-  margin-top: 0; /* Remove top margin */
+  margin: 0; /* Remove top margin */
   line-height: 1.4;
+}
+
+.page-header .btn-primary {
+  margin-bottom: 4px; /* Nudges the button up perfectly to the text baseline */
 }
 
 .btn-primary {
