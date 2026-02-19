@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import SearchBar from "./components/SearchBar";
 import TeamTable from "./components/TeamTable";
 import AddMemberModal from "./components/AddMemberModal";
+import DeleteConfirmationModal from "./components/DeleteConfirmationModal"; // Import new modal
 import Dropdown from "./components/Dropdown";
 import "./TeamManagement.css";
 
@@ -13,10 +14,15 @@ export default function App() {
   const [filterFunction, setFilterFunction] = useState("");
   const [filterRole, setFilterRole] = useState("");
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Modal States
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [memberToEdit, setMemberToEdit] = useState(null);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState(null);
+
   const [toast, setToast] = useState({ show: false, message: "" });
 
-  // Dropdown Options
   const FUNCTION_OPTIONS = [
     { label: "Marketing & Sales", value: "MARKETING_SALES" },
     { label: "Product", value: "PRODUCT" },
@@ -29,7 +35,6 @@ export default function App() {
     { label: "Contributor", value: "CONTRIBUTOR" },
   ];
 
-  // Fetch from Spring Boot
   const fetchMembers = async () => {
     try {
       const params = new URLSearchParams();
@@ -54,33 +59,67 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [query, filterFunction, filterRole]);
 
-  const handleAddMember = async (newMember) => {
+  // --- HANDLERS ---
+
+  // Open "Add" Modal
+  const openAddModal = () => {
+    setMemberToEdit(null); // Clear edit data
+    setIsFormModalOpen(true);
+  };
+
+  // Open "Edit" Modal (Triggered from Table)
+  const openEditModal = (member) => {
+    setMemberToEdit(member);
+    setIsFormModalOpen(true);
+  };
+
+  // Handle Save (Create or Update)
+  const handleSaveMember = async (formData) => {
     try {
-      const res = await fetch("/api/team-members", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newMember),
-      });
+      let res;
+      if (memberToEdit) {
+        // UPDATE
+        res = await fetch(`/api/team-members/${memberToEdit.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+      } else {
+        // CREATE
+        res = await fetch("/api/team-members", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+      }
 
       if (res.ok) {
-        setIsModalOpen(false);
+        setIsFormModalOpen(false);
         fetchMembers();
-        showToast("Member Added");
+        showToast(memberToEdit ? "Member Updated" : "Member Added");
       } else {
         const err = await res.json();
-        alert(err.message || "Failed to add member");
+        alert(err.message || "Operation failed");
       }
     } catch (error) {
-      console.error("Error adding member", error);
+      console.error("Error saving member", error);
     }
   };
 
-  const handleDeleteMember = async (id) => {
-    if(!window.confirm("Are you sure you want to remove this member?")) return;
+  // Open "Delete" Modal (Triggered from Table)
+  const confirmDelete = (id) => {
+    const member = members.find(m => m.id === id);
+    setMemberToDelete(member);
+    setIsDeleteModalOpen(true);
+  };
 
+  // Handle Actual Delete
+  const handleDeleteMember = async () => {
+    if (!memberToDelete) return;
     try {
-      const res = await fetch(`/api/team-members/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/team-members/${memberToDelete.id}`, { method: "DELETE" });
       if (res.ok) {
+        setIsDeleteModalOpen(false);
         fetchMembers();
         showToast("Member Deleted");
       }
@@ -98,21 +137,18 @@ export default function App() {
     <div className="team-management-body">
       <div className="tm-container">
         
-        {/* Search */}
         <SearchBar value={query} onChange={setQuery} />
 
-        {/* Header */}
         <div className="page-header">
           <div>
             <h1>Your Team</h1>
             <p>Add new members, change roles or permissions, and view existing team members.</p>
           </div>
-          <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
+          <button className="btn-primary" onClick={openAddModal}>
             Add Member
           </button>
         </div>
 
-        {/* Filters */}
         <div className="filters">
           <Dropdown 
             variant="filter"
@@ -130,21 +166,33 @@ export default function App() {
           />
         </div>
 
-        {/* Table */}
-        <TeamTable members={members} onDelete={handleDeleteMember} />
+        {/* Pass handlers to Table */}
+        <TeamTable 
+          members={members} 
+          onDelete={confirmDelete} 
+          onEdit={openEditModal} 
+        />
 
       </div>
 
-      {/* Modal */}
+      {/* Reused Modal for Add & Edit */}
       <AddMemberModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onAdd={handleAddMember}
+        isOpen={isFormModalOpen} 
+        onClose={() => setIsFormModalOpen(false)} 
+        onSave={handleSaveMember} // Renamed prop
+        memberToEdit={memberToEdit} // Pass member data if editing
         functionOptions={FUNCTION_OPTIONS}
         roleOptions={ROLE_OPTIONS}
       />
 
-      {/* Toast Popup with Icon */}
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteMember}
+        memberName={memberToDelete?.fullName}
+      />
+
       <div className={`toast ${toast.show ? 'show' : ''}`} id="toast">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#23C3AB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="20 6 9 17 4 12"></polyline>

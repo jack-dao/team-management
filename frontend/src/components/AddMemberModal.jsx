@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Dropdown from './Dropdown';
 
-export default function AddMemberModal({ isOpen, onClose, onAdd, functionOptions, roleOptions }) {
+export default function AddMemberModal({ 
+  isOpen, 
+  onClose, 
+  onSave, // Changed from onAdd to onSave to be generic
+  memberToEdit = null, // New prop
+  functionOptions, 
+  roleOptions 
+}) {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -11,12 +18,22 @@ export default function AddMemberModal({ isOpen, onClose, onAdd, functionOptions
   
   const [emailError, setEmailError] = useState(false);
 
+  // Reset or Pre-fill form when modal opens
   useEffect(() => {
     if (isOpen) {
-      setFormData({ fullName: '', email: '', function: '', role: '' });
+      if (memberToEdit) {
+        setFormData({
+          fullName: memberToEdit.fullName,
+          email: memberToEdit.email,
+          function: memberToEdit.function, // specific to your backend model
+          role: memberToEdit.role          // specific to your backend model
+        });
+      } else {
+        setFormData({ fullName: '', email: '', function: '', role: '' });
+      }
       setEmailError(false);
     }
-  }, [isOpen]);
+  }, [isOpen, memberToEdit]);
 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -33,12 +50,10 @@ export default function AddMemberModal({ isOpen, onClose, onAdd, functionOptions
 
   const handleSubmit = () => {
     if (isFormValid) {
-      // CORRECTED: Keys must match Java field names "function" and "role"
-      onAdd({
-        fullName: formData.fullName,
-        email: formData.email,
-        function: formData.function,
-        role: formData.role
+      // Pass back the data (include ID if editing)
+      onSave({
+        ...formData,
+        id: memberToEdit ? memberToEdit.id : undefined
       });
     }
   };
@@ -60,7 +75,9 @@ export default function AddMemberModal({ isOpen, onClose, onAdd, functionOptions
   return (
     <div className="overlay open" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
-        <div className="modal-title">Add Team Member</div>
+        <div className="modal-title">
+          {memberToEdit ? 'Edit Team Member' : 'Add Team Member'}
+        </div>
         <button className="modal-close" onClick={onClose}>✕</button>
 
         <div className="field">
@@ -111,7 +128,9 @@ export default function AddMemberModal({ isOpen, onClose, onAdd, functionOptions
 
         <div className="modal-actions">
           <button className="btn-cancel" onClick={onClose}>Cancel</button>
-          <button className="btn-add" disabled={!isFormValid} onClick={handleSubmit}>Add to Team</button>
+          <button className="btn-add" disabled={!isFormValid} onClick={handleSubmit}>
+            {memberToEdit ? 'Save Changes' : 'Add to Team'}
+          </button>
         </div>
       </div>
     </div>
