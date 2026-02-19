@@ -184,11 +184,23 @@
   grid-template-columns: 260px 1fr 1fr 44px;
   background: #C7E2FF;
   padding: 11px 20px;
-  border-radius: 13px 13px 0 0; /* Add radius here since wrap overflow is visible */
-  position: relative; z-index: 10; /* Ensure header stays above normal rows */
+  border-radius: 13px 13px 0 0; 
+  position: relative; 
+  z-index: 10; 
+  align-items: center; /* 👇 This perfectly centers the text vertically! 👇 */
 }
+
 .table-head span {
-  font-size: 13px; font-weight: 600; color: #1e3a5f;
+  font-family: 'Open Sans', sans-serif; /* Added Open Sans */
+  font-weight: 700;                     /* Bold */
+  font-size: 14px;                      /* Increased from 13px */
+  line-height: 1.2;                     /* 120% */
+  letter-spacing: 0;
+  color: #1e3a5f;                       /* Keeping your existing text color */
+}
+
+.table-head span:first-child {
+  padding-left: 44px;
 }
 
 .table-row {
