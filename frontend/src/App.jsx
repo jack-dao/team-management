@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import SearchBar from "./components/SearchBar";
 import TeamTable from "./components/TeamTable";
 import AddMemberModal from "./components/AddMemberModal";
-import DeleteConfirmationModal from "./components/DeleteConfirmationModal"; // Import new modal
+import DeleteConfirmationModal from "./components/DeleteConfirmationModal";
 import Dropdown from "./components/Dropdown";
 import "./TeamManagement.css";
 
@@ -179,8 +179,8 @@ export default function App() {
       <AddMemberModal 
         isOpen={isFormModalOpen} 
         onClose={() => setIsFormModalOpen(false)} 
-        onSave={handleSaveMember} // Renamed prop
-        memberToEdit={memberToEdit} // Pass member data if editing
+        onSave={handleSaveMember} 
+        memberToEdit={memberToEdit} 
         functionOptions={FUNCTION_OPTIONS}
         roleOptions={ROLE_OPTIONS}
       />
@@ -193,12 +193,15 @@ export default function App() {
         memberName={memberToDelete?.fullName}
       />
 
+      {/* Notifications Toast */}
       <div className={`toast ${toast.show ? 'show' : ''}`} id="toast">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#23C3AB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
         <span id="toastMsg">{toast.message}</span>
-        <button className="toast-close" onClick={() => setToast({ show: false, message: "" })}>✕</button>
+        <button className="toast-close" onClick={() => setToast({ show: false, message: "" })}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F9FAFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
     </div>
   );
