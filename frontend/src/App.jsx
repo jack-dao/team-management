@@ -4,6 +4,7 @@ import TeamTable from "./components/TeamTable";
 import AddMemberModal from "./components/AddMemberModal";
 import DeleteConfirmationModal from "./components/DeleteConfirmationModal";
 import Dropdown from "./components/Dropdown";
+import ErrorDialog from "./components/ErrorDialog"; // 1. Imported the ErrorDialog
 import "./TeamManagement.css";
 
 export default function App() {
@@ -20,6 +21,9 @@ export default function App() {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);
+
+  // 2. Added Error Dialog State
+  const [showErrorDialog, setShowErrorDialog] = useState(false);
 
   const [toast, setToast] = useState({ show: false, message: "" });
 
@@ -46,9 +50,12 @@ export default function App() {
       if (res.ok) {
         const data = await res.json();
         setMembers(data);
+      } else {
+        setShowErrorDialog(true); // 3. Handle server errors on fetch
       }
     } catch (error) {
       console.error("Failed to fetch members", error);
+      setShowErrorDialog(true); // 3. Handle network errors on fetch
     }
   };
 
@@ -93,11 +100,12 @@ export default function App() {
         fetchMembers();
         showToast(memberToEdit ? "Member Updated" : "New Member Added");
       } else {
-        const err = await res.json();
-        alert(err.message || "Operation failed");
+        // 4. Replaced the native alert() with the Error Dialog
+        setShowErrorDialog(true);
       }
     } catch (error) {
       console.error("Error saving member", error);
+      setShowErrorDialog(true); // 4. Handle network errors on save
     }
   };
 
@@ -115,9 +123,12 @@ export default function App() {
         setIsDeleteModalOpen(false);
         fetchMembers();
         showToast("Member Deleted");
+      } else {
+        setShowErrorDialog(true); // 5. Handle server errors on delete
       }
     } catch (error) {
       console.error("Error deleting member", error);
+      setShowErrorDialog(true); // 5. Handle network errors on delete
     }
   };
 
@@ -137,6 +148,9 @@ export default function App() {
             <h1>Your Team</h1>
             <p>Add new members, change roles or permissions, and view existing team members.</p>
           </div>
+          {/* Temporary button strictly to easily pop the modal and take a screenshot, you can delete this later! */}
+          {/* <button className="btn-primary" onClick={() => setShowErrorDialog(true)} style={{marginRight: '10px'}}>Test Error</button> */}
+          
           <button className="btn-primary" onClick={openAddModal}>
             Add Member
           </button>
@@ -185,6 +199,12 @@ export default function App() {
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDeleteMember}
         memberName={memberToDelete?.fullName}
+      />
+
+      {/* 6. Added the Error Dialog component here */}
+      <ErrorDialog 
+        isOpen={showErrorDialog} 
+        onClose={() => setShowErrorDialog(false)} 
       />
 
       <div className={`toast ${toast.show ? 'show' : ''}`} id="toast">
