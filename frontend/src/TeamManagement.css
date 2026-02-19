@@ -379,12 +379,18 @@
 
 /* Empty States */
 .empty-state { 
-  text-align: center; 
+  display: block;              /* Ensure it spans the full width */
+  text-align: left;            /* Force text to the left */
   padding-top: 80px; 
   padding-bottom: 80px;
+  padding-left: 68px;          /* 52px (Avatar col) + 16px (Name padding) = 68px */
+  
+  /* Typography Specs */
   font-family: 'Open Sans', sans-serif;
   font-weight: 400;
   font-size: 16px;
+  line-height: 1.2;            /* 120% line-height */
+  letter-spacing: 0;
   color: #040820;
 }
 
