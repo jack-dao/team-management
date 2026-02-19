@@ -378,21 +378,21 @@
 }
 
 /* Empty States */
-.empty-state { 
-  display: block;              /* Ensure it spans the full width */
-  text-align: left;            /* Force text to the left */
-  padding-top: 80px; 
-  padding-bottom: 80px;
-  padding-left: 68px;          /* 52px (Avatar col) + 16px (Name padding) = 68px */
-  
-  /* Typography Specs */
+.empty-state {
+  display: block;
+  text-align: left;
+
+  /* put it right under the header row */
+  padding: 18px 16px 18px 68px; /* left aligns under Name (52 + 16) */
+
   font-family: 'Open Sans', sans-serif;
   font-weight: 400;
   font-size: 16px;
-  line-height: 1.2;            /* 120% line-height */
+  line-height: 1.2;
   letter-spacing: 0;
   color: #040820;
 }
+
 
 /* MODAL & TOAST */
 .overlay {
