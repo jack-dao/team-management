@@ -96,7 +96,7 @@ export default function App() {
       if (res.ok) {
         setIsFormModalOpen(false);
         fetchMembers();
-        showToast(memberToEdit ? "Member Updated" : "Member Added");
+        showToast(memberToEdit ? "Member Updated" : "New Member Added");
       } else {
         const err = await res.json();
         alert(err.message || "Operation failed");
