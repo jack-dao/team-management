@@ -61,31 +61,26 @@ export default function App() {
 
   // --- HANDLERS ---
 
-  // Open "Add" Modal
   const openAddModal = () => {
-    setMemberToEdit(null); // Clear edit data
+    setMemberToEdit(null); 
     setIsFormModalOpen(true);
   };
 
-  // Open "Edit" Modal (Triggered from Table)
   const openEditModal = (member) => {
     setMemberToEdit(member);
     setIsFormModalOpen(true);
   };
 
-  // Handle Save (Create or Update)
   const handleSaveMember = async (formData) => {
     try {
       let res;
       if (memberToEdit) {
-        // UPDATE
         res = await fetch(`/api/team-members/${memberToEdit.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
       } else {
-        // CREATE
         res = await fetch("/api/team-members", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -106,14 +101,12 @@ export default function App() {
     }
   };
 
-  // Open "Delete" Modal (Triggered from Table)
   const confirmDelete = (id) => {
     const member = members.find(m => m.id === id);
     setMemberToDelete(member);
     setIsDeleteModalOpen(true);
   };
 
-  // Handle Actual Delete
   const handleDeleteMember = async () => {
     if (!memberToDelete) return;
     try {
@@ -166,16 +159,18 @@ export default function App() {
           />
         </div>
 
-        {/* Pass handlers to Table */}
+        {/* Pass handlers and filter states to Table */}
         <TeamTable 
           members={members} 
           onDelete={confirmDelete} 
           onEdit={openEditModal} 
+          query={query}
+          filterFunction={filterFunction}
+          filterRole={filterRole}
         />
 
       </div>
 
-      {/* Reused Modal for Add & Edit */}
       <AddMemberModal 
         isOpen={isFormModalOpen} 
         onClose={() => setIsFormModalOpen(false)} 
@@ -185,7 +180,6 @@ export default function App() {
         roleOptions={ROLE_OPTIONS}
       />
 
-      {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
@@ -193,7 +187,6 @@ export default function App() {
         memberName={memberToDelete?.fullName}
       />
 
-      {/* Notifications Toast */}
       <div className={`toast ${toast.show ? 'show' : ''}`} id="toast">
         <span id="toastMsg">{toast.message}</span>
         <button className="toast-close" onClick={() => setToast({ show: false, message: "" })}>
